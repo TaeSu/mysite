@@ -3,6 +3,7 @@ package kr.co.saramin.mysite.dao;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import kr.co.saramin.mysite.vo.UserVo;
@@ -64,5 +65,57 @@ public class UserDao {
 		}
 		
 		return result;
+	}
+	
+	public UserVo get(String email, String password) {
+		UserVo vo = null;
+		
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		try {
+			conn = getConnection();
+			
+			//3. Statement 생성
+			String sql = "select no, name from user where email=? and password=password(?)";
+			pstmt = conn.prepareStatement(sql);
+			
+			//4. binding
+			pstmt.setString(1, email);
+			pstmt.setString(2, password);
+			
+			//5. SQL문 실행
+			rs = pstmt.executeQuery();
+			if (rs.next()) {
+				Long no = rs.getLong(1);
+				String name = rs.getString(2);
+				
+				vo = new UserVo();
+				vo.setNo(no);
+				vo.setName(name);
+			}
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+				if (pstmt != null) {
+					pstmt.close();
+				}
+				if (conn != null) {
+					conn.close();
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		return vo;
 	}
 }

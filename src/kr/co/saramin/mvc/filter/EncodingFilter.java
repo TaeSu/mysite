@@ -12,15 +12,22 @@ import javax.servlet.annotation.WebFilter;
 /**
  * Servlet Filter implementation class EncodingFilter
  */
-@WebFilter("/EncodingFilter")
+//@WebFilter("/EncodingFilter")
 public class EncodingFilter implements Filter {
-
+	
+	private String encoding;
+	
 	public void init(FilterConfig fConfig) throws ServletException {
+		System.out.println("EncodingFilter");
+		encoding = fConfig.getInitParameter("encoding");
+		if (encoding == null) {
+			encoding = "UTF-8";
+		}
 	}
 
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 		// request 처리
-		request.setCharacterEncoding("UTF-8");
+		request.setCharacterEncoding(encoding);
 		
 		chain.doFilter(request, response);
 		
